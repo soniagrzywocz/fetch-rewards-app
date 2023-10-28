@@ -70,7 +70,6 @@ func examineRetailerName(retailerName string) (points int) {
 			points++
 		}
 	}
-	fmt.Printf("Points from retailer: %d\n", points)
 	return points
 }
 
@@ -83,7 +82,6 @@ func examineTotal(total string) (points int) {
 	if isMultipleOfQuarter(total) {
 		points += 25
 	}
-	fmt.Printf("Points from total: %d\n", points)
 	return
 }
 
@@ -133,6 +131,7 @@ func examineHour(purchaseTime string) (points int) {
 	points = 0
 	parsedTime, err := time.Parse("15:04", purchaseTime)
 	if err != nil {
+		// ADD PROPER LOGS
 		fmt.Printf("Error parsing hour: %v\n", err)
 		return 0
 	}
