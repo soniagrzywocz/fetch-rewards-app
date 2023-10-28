@@ -15,6 +15,10 @@ import (
 )
 
 func main() {
+	// set up logging
+	file, _ := os.Create("log")
+	log.SetOutput(file)
+
 	r := mux.NewRouter()
 
 	r.HandleFunc("/receipts/process", api.ProcessReceiptHandler).Methods("POST")
@@ -43,6 +47,9 @@ func main() {
 	// Wait for the interrupt signal
 	<-stop
 	fmt.Println("Shutting down the server...")
+
+	// wrap up logging
+	file.Close()
 
 	// Create a context with a timeout to force shutdown after a given duration (e.g., 5 seconds)
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)

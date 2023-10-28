@@ -1,7 +1,7 @@
 package models
 
 import (
-	"fmt"
+	"log"
 	"math"
 	"strconv"
 	"strings"
@@ -62,7 +62,7 @@ func calculatePoints(receipt *Receipt) (points int) {
 	return points
 }
 
-// helper functions to make the calculations easier
+// HELPER FUNCTIONS FOR CALCULATIONS
 func examineRetailerName(retailerName string) (points int) {
 	points = 0
 	for _, char := range retailerName {
@@ -93,7 +93,7 @@ func isRoundTotal(total string) bool {
 func isMultipleOfQuarter(total string) bool {
 	num, err := strconv.ParseFloat(total, 64)
 	if err != nil {
-		// ADD LOGS
+		log.Printf("isMultipleOfQuarter: error parsing total: %v\n", err)
 		return false
 	}
 
@@ -115,7 +115,7 @@ func examinePurchaseDate(purchaseDate string) (points int) {
 
 	date, err := time.Parse("2006-01-02", purchaseDate)
 	if err != nil {
-		// ADD PROPER LOGS
+		log.Printf("examinePurchaseDate: error parsing purchaseDate: %v\n", err)
 		return 0
 	}
 
@@ -127,12 +127,10 @@ func examinePurchaseDate(purchaseDate string) (points int) {
 }
 
 func examineHour(purchaseTime string) (points int) {
-	//10pts if the time of purchase is after 2pm and before 4pm
 	points = 0
 	parsedTime, err := time.Parse("15:04", purchaseTime)
 	if err != nil {
-		// ADD PROPER LOGS
-		fmt.Printf("Error parsing hour: %v\n", err)
+		log.Printf("ExamineHour error parsing purchaseTime: %v\n", err)
 		return 0
 	}
 
@@ -154,8 +152,7 @@ func examineDescription(desc string, price string) (points int) {
 	if calcLen%3 == 0 {
 		num, err := strconv.ParseFloat(price, 64)
 		if err != nil {
-			// ADD PROPER LOGS
-			fmt.Printf("Error converting desc: %v\n", err)
+			log.Printf("ExamineDescription: error parsing description:  %v\n", err)
 			return
 		}
 

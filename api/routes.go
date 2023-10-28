@@ -3,8 +3,8 @@ package api
 import (
 	"encoding/json"
 	"fetch/models"
-	"fmt"
 	"io"
+	"log"
 	"net/http"
 
 	"github.com/gorilla/mux"
@@ -28,13 +28,15 @@ func ProcessReceiptHandler(w http.ResponseWriter, r *http.Request) {
 	// ADD PROPER ERROR MESSAGES
 	var receipt models.Receipt
 	if err := ParseJSONRequest(r, &receipt); err != nil {
-		http.Error(w, "Failed to parse JSON data", http.StatusBadRequest)
+		http.Error(w, "The receipt is invalid", http.StatusBadRequest)
+		log.Printf("The receipt format is invalid")
 		return
 	}
 
 	id, err := models.SaveReceipt(receipt)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
+		log.Panicf("Error saving the receipt: %v", err)
 		return
 	}
 
@@ -46,13 +48,14 @@ func ProcessReceiptHandler(w http.ResponseWriter, r *http.Request) {
 
 	jsonResponse, jsonErr := json.Marshal(response)
 	if jsonErr != nil {
-		fmt.Printf("Error marshaling response")
+		log.Printf("ProcessReceiptHandler: error marshaling response")
+		http.Error(w, "Something went wrong", http.StatusInternalServerError)
 	}
 	w.Header().Set("Content-Type", "application/json")
-	// Respond with the created receipt's ID
 	w.WriteHeader(http.StatusOK)
 	w.Write(jsonResponse)
-	fmt.Printf("New Receipt processed")
+	// fmt.Printf("New Receipt processed")
+	log.Printf("New Receipt processed with an ID: %v\n", id)
 }
 
 func GetPointsHandler(w http.ResponseWriter, r *http.Request) {
@@ -71,8 +74,10 @@ func GetPointsHandler(w http.ResponseWriter, r *http.Request) {
 
 		jsonResponse, err := json.Marshal(response)
 		if err != nil {
-			fmt.Printf("Error marshaling response")
+			log.Printf("GetPointsHandler: error marshaling response in a happy path")
+			http.Error(w, "Something went wrong", http.StatusInternalServerError)
 		}
+		log.Printf("GET request for receiptID:  %v ,points:  %d", receiptId, points)
 		w.WriteHeader(http.StatusOK)
 		w.Write(jsonResponse)
 	} else {
@@ -83,7 +88,8 @@ func GetPointsHandler(w http.ResponseWriter, r *http.Request) {
 		}
 		jsonResponse, err := json.Marshal(response)
 		if err != nil {
-			fmt.Printf("Error marshaling response")
+			log.Printf("GetPointsHandler: error marshaling response in a negative path")
+			http.Error(w, "Something went wrong", http.StatusInternalServerError)
 		}
 		w.WriteHeader(http.StatusNotFound)
 		w.Write(jsonResponse)
