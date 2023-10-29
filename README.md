@@ -16,6 +16,9 @@ Rules are defined as follows:
 
 1. Clone repo to your desired directory 
 1. Navigate to `fetch` directory 
+1. Run `go get github.com/google/uuid`
+1. Run `go get -u github.com/gorilla/mux`
+1. Run `go get github.com/go-playground/validator/v10`
 1. To start the `server`, run `go run main.go` 
 1. To gracefully shutdown the server, press `ctrl + C` 
 
