@@ -12,9 +12,14 @@ import (
 	"github.com/gorilla/mux"
 )
 
-func ProcessReceiptHandler(w http.ResponseWriter, r *http.Request) {
+func SetRoutes(r *mux.Router) {
+	r.HandleFunc("/receipts/process", processReceiptHandler).Methods("POST")
+	r.HandleFunc("/receipts/{id}/points", getPointsHandler).Methods("GET")
+}
+
+func processReceiptHandler(w http.ResponseWriter, r *http.Request) {
 	var receipt models.Receipt
-	if err := ParseJSONRequest(r, &receipt); err != nil {
+	if err := parseJSONRequest(r, &receipt); err != nil {
 		http.Error(w, "Something went wrong", http.StatusInternalServerError)
 		return
 	}
@@ -50,7 +55,7 @@ func ProcessReceiptHandler(w http.ResponseWriter, r *http.Request) {
 	log.Printf("New Receipt processed with an ID: %v\n", id)
 }
 
-func GetPointsHandler(w http.ResponseWriter, r *http.Request) {
+func getPointsHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
 	vars := mux.Vars(r)
@@ -86,7 +91,7 @@ func GetPointsHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func ParseJSONRequest(r *http.Request, v interface{}) error {
+func parseJSONRequest(r *http.Request, v interface{}) error {
 	body, err := io.ReadAll(r.Body)
 	if err != nil {
 		return err

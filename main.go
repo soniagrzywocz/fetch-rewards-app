@@ -20,9 +20,7 @@ func main() {
 	log.SetOutput(file)
 
 	r := mux.NewRouter()
-
-	r.HandleFunc("/receipts/process", api.ProcessReceiptHandler).Methods("POST")
-	r.HandleFunc("/receipts/{id}/points", api.GetPointsHandler).Methods("GET")
+	api.SetRoutes(r)
 
 	srv := &http.Server{
 		Handler:      r,
